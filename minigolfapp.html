@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Minigolf Punkte</title>
+
+<style>
+:root{
+  --bg:#06111f;
+  --bg2:#0a1a2d;
+  --card:#111d30;
+  --card2:#16253d;
+  --line:#2a3b55;
+  --text:#f8fafc;
+  --muted:#9facbf;
+  --blue:#3b82f6;
+  --yellow:#fbbf24;
+  --red:#ef4444;
+  --green:#22c55e;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  width:100%;
+  min-height:100%;
+  overflow-x:hidden;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--text);
+  background:linear-gradient(160deg,var(--bg),var(--bg2));
+}
+
+button,input,select{font:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+
+.app{
+  width:100%;
+  max-width:430px;
+  min-height:100dvh;
+  margin:0 auto;
+  padding:18px 14px calc(96px + var(--safe-bottom));
+}
+
+.header{
+  margin-bottom:14px;
+}
+
+h1{
+  margin:0;
+  font-size:28px;
+  letter-spacing:-.04em;
+}
+
+.sub{
+  margin:4px 0 0;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin:14px 0;
+}
+
+.stat{
+  min-width:0;
+  padding:10px 6px;
+  background:rgba(17,29,48,.85);
+  border:1px solid var(--line);
+  border-radius:16px;
+  text-align:center;
+}
+
+.stat small{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.stat strong{
+  display:block;
+  margin-top:3px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:18px;
+}
+
+.section{display:none}
+.section.active{display:block}
+
+.card{
+  width:100%;
+  margin-bottom:14px;
+  padding:14px;
+  background:rgba(17,29,48,.92);
+  border:1px solid var(--line);
+  border-radius:20px;
+}
+
+.card h2{
+  margin:0 0 12px;
+  font-size:20px;
+}
+
+label{
+  display:block;
+  margin-bottom:6px;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+}
+
+input,select{
+  width:100%;
+  min-height:50px;
+  padding:12px;
+  color:var(--text);
+  background:#0b1627;
+  border:1px solid var(--line);
+  border-radius:14px;
+  outline:none;
+  font-size:16px;
+}
+
+select option{color:#111827}
+
+input:focus,select:focus{
+  border-color:#60a5fa;
+  box-shadow:0 0 0 3px rgba(59,130,246,.22);
+}
+
+.field{margin-bottom:12px}
+
+.btn{
+  width:100%;
+  min-height:50px;
+  border:0;
+  border-radius:14px;
+  padding:12px;
+  color:white;
+  background:var(--blue);
+  font-weight:900;
+}
+
+.btn.secondary{background:#334155}
+.btn.danger{background:var(--red)}
+.btn.green{background:var(--green);color:#06111f}
+
+.btn-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.players{
+  display:grid;
+  gap:8px;
+}
+
+.player{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:8px;
+  align-items:center;
+  padding:10px;
+  background:var(--card2);
+  border:1px solid var(--line);
+  border-radius:14px;
+}
+
+.player-name{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-weight:900;
+}
+
+.small-btn{
+  min-height:38px;
+  border:0;
+  border-radius:12px;
+  padding:8px 10px;
+  color:white;
+  background:var(--red);
+  font-weight:800;
+}
+
+.hole-nav{
+  display:grid;
+  grid-template-columns:52px 1fr 52px;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.arrow{
+  height:52px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#1b2b44;
+  color:white;
+  font-size:28px;
+  font-weight:900;
+}
+
+.hole-title{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:0;
+  height:52px;
+  background:#1b2b44;
+  border:1px solid var(--line);
+  border-radius:16px;
+  font-size:20px;
+  font-weight:900;
+}
+
+.hole-dots{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(42px,1fr));
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.dot{
+  width:100%;
+  aspect-ratio:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#1b2b44;
+  color:white;
+  font-weight:900;
+}
+
+.dot.active{
+  background:var(--blue);
+  border-color:#60a5fa;
+}
+
+.score-list{
+  display:grid;
+  gap:10px;
+}
+
+.score-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:10px;
+  background:var(--card2);
+  border:1px solid var(--line);
+  border-radius:16px;
+}
+
+.score-name{
+  min-width:0;
+}
+
+.score-name strong{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:17px;
+}
+
+.score-name span{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.stepper{
+  display:grid;
+  grid-template-columns:44px 54px 44px;
+  gap:6px;
+  align-items:center;
+}
+
+.stepper button{
+  width:44px;
+  height:44px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#233758;
+  color:white;
+  font-size:24px;
+  font-weight:900;
+}
+
+.stepper input{
+  width:54px;
+  min-height:44px;
+  height:44px;
+  padding:0;
+  text-align:center;
+  font-size:20px;
+  font-weight:900;
+}
+
+.rank-list{
+  display:grid;
+  gap:8px;
+}
+
+.rank-row{
+  display:grid;
+  grid-template-columns:38px 1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:10px;
+  background:var(--card2);
+  border:1px solid var(--line);
+  border-radius:14px;
+}
+
+.rank-number{
+  width:36px;
+  height:36px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:#233758;
+  font-weight:900;
+}
+
+.rank-row:first-child .rank-number{
+  background:var(--yellow);
+  color:#111827;
+}
+
+.rank-name{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-weight:900;
+}
+
+.rank-info{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:2px;
+}
+
+.rank-total{
+  font-size:22px;
+  font-weight:900;
+}
+
+.empty{
+  padding:14px;
+  color:var(--muted);
+  background:rgba(22,37,61,.7);
+  border:1px dashed var(--line);
+  border-radius:14px;
+}
+
+.bottom{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:50;
+  max-width:430px;
+  margin:0 auto;
+  padding:8px 12px calc(10px + var(--safe-bottom));
+  background:rgba(6,17,31,.96);
+  border-top:1px solid var(--line);
+  backdrop-filter:blur(14px);
+}
+
+.bottom-inner{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.nav{
+  min-height:56px;
+  border:0;
+  border-radius:16px;
+  background:transparent;
+  color:var(--muted);
+  font-weight:900;
+  font-size:12px;
+}
+
+.nav span{
+  display:block;
+  font-size:20px;
+  margin-bottom:3px;
+}
+
+.nav.active{
+  background:#13233a;
+  color:#60a5fa;
+}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:calc(82px + var(--safe-bottom));
+  z-index:70;
+  transform:translateX(-50%) translateY(12px);
+  opacity:0;
+  pointer-events:none;
+  max-width:calc(100% - 24px);
+  padding:10px 14px;
+  background:#020617;
+  border:1px solid var(--line);
+  border-radius:999px;
+  transition:.2s ease;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+@media(max-width:360px){
+  .app{padding-left:10px;padding-right:10px}
+  .score-row{grid-template-columns:1fr}
+  .stepper{grid-template-columns:1fr 60px 1fr}
+  .stepper button,.stepper input{width:100%}
+}
+</style>
+</head>
+
+<body>
+<main class="app">
+  <header class="header">
+    <h1>⛳ Minigolf Punkte</h1>
+    <p class="sub">Mobile Score-App</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><small>Spieler</small><strong id="playerCount">0</strong></div>
+    <div class="stat"><small>Bahn</small><strong id="holeText">1 / 18</strong></div>
+    <div class="stat"><small>Führend</small><strong id="leaderText">–</strong></div>
+  </div>
+
+  <section id="scoreTab" class="section active">
+    <div class="card">
+      <div class="hole-nav">
+        <button class="arrow" id="prevHole" type="button">‹</button>
+        <div class="hole-title" id="holeTitle">Bahn 1</div>
+        <button class="arrow" id="nextHole" type="button">›</button>
+      </div>
+
+      <div id="holeDots" class="hole-dots"></div>
+      <div id="scoreList" class="score-list"></div>
+    </div>
+  </section>
+
+  <section id="setupTab" class="section">
+    <div class="card">
+      <h2>Spieler</h2>
+      <div class="field">
+        <label for="playerName">Name</label>
+        <input id="playerName" type="text" maxlength="24" autocomplete="off" placeholder="z. B. Max">
+      </div>
+      <button class="btn green" id="addPlayer" type="button">Spieler hinzufügen</button>
+    </div>
+
+    <div class="card">
+      <h2>Runde</h2>
+      <div class="field">
+        <label for="holeCount">Bahnen</label>
+        <select id="holeCount">
+          <option value="6">6 Bahnen</option>
+          <option value="9">9 Bahnen</option>
+          <option value="12">12 Bahnen</option>
+          <option value="18">18 Bahnen</option>
+        </select>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn secondary" id="clearScores" type="button">Scores leeren</button>
+        <button class="btn danger" id="resetAll" type="button">Alles löschen</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Aktive Spieler</h2>
+      <div id="playersList" class="players"></div>
+    </div>
+  </section>
+
+  <section id="rankTab" class="section">
+    <div class="card">
+      <h2>Rangliste</h2>
+      <div id="rankList" class="rank-list"></div>
+    </div>
+  </section>
+</main>
+
+<nav class="bottom">
+  <div class="bottom-inner">
+    <button class="nav active" type="button" data-tab="scoreTab"><span>✎</span>Score</button>
+    <button class="nav" type="button" data-tab="setupTab"><span>👥</span>Setup</button>
+    <button class="nav" type="button" data-tab="rankTab"><span>🏆</span>Rang</button>
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+const STORAGE_KEY = "minigolf-fixed-mobile-v1";
+const MIN_SCORE = 0;
+const MAX_SCORE = 20;
+
+const state = {
+  tab: "scoreTab",
+  hole: 0,
+  holes: 18,
+  players: []
+};
+
+const $ = (id) => document.getElementById(id);
+
+const els = {
+  playerCount: $("playerCount"),
+  holeText: $("holeText"),
+  leaderText: $("leaderText"),
+  holeTitle: $("holeTitle"),
+  holeDots: $("holeDots"),
+  scoreList: $("scoreList"),
+  playerName: $("playerName"),
+  addPlayer: $("addPlayer"),
+  playersList: $("playersList"),
+  holeCount: $("holeCount"),
+  clearScores: $("clearScores"),
+  resetAll: $("resetAll"),
+  rankList: $("rankList"),
+  prevHole: $("prevHole"),
+  nextHole: $("nextHole"),
+  toast: $("toast")
+};
+
+function uid(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return "p" + Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+function escapeHtml(value){
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function validHoles(value){
+  const n = Number(value);
+  return [6,9,12,18].includes(n) ? n : 18;
+}
+
+function validScore(value){
+  if(value === "" || value === null || value === undefined) return "";
+  const n = Number(value);
+  if(!Number.isInteger(n)) return "";
+  if(n < MIN_SCORE || n > MAX_SCORE) return "";
+  return n;
+}
+
+function normalize(){
+  state.holes = validHoles(state.holes);
+  state.hole = Math.max(0, Math.min(Number(state.hole) || 0, state.holes - 1));
+
+  if(!Array.isArray(state.players)) state.players = [];
+
+  state.players = state.players
+    .filter(p => p && typeof p.name === "string" && p.name.trim())
+    .map(p => {
+      const oldScores = Array.isArray(p.scores) ? p.scores : [];
+      return {
+        id: typeof p.id === "string" && p.id ? p.id : uid(),
+        name: p.name.trim().slice(0,24),
+        scores: Array.from({length:state.holes}, (_,i) => validScore(oldScores[i]))
+      };
+    });
+}
+
+function save(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }catch{
+    showToast("Speichern fehlgeschlagen");
+  }
+}
+
+function load(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    if(data && typeof data === "object"){
+      state.tab = data.tab || "scoreTab";
+      state.hole = data.hole || 0;
+      state.holes = data.holes || 18;
+      state.players = Array.isArray(data.players) ? data.players : [];
+    }
+  }catch{
+    localStorage.removeItem(STORAGE_KEY);
+  }
+  normalize();
+}
+
+function showToast(text){
+  els.toast.textContent = text;
+  els.toast.classList.add("show");
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => els.toast.classList.remove("show"), 1300);
+}
+
+function total(player){
+  return player.scores.reduce((sum, score) => sum + (Number(score) || 0), 0);
+}
+
+function played(player){
+  return player.scores.filter(score => score !== "").length;
+}
+
+function sortedPlayers(){
+  return [...state.players].sort((a,b) => {
+    const ap = played(a);
+    const bp = played(b);
+
+    if(ap === 0 && bp > 0) return 1;
+    if(bp === 0 && ap > 0) return -1;
+
+    const td = total(a) - total(b);
+    if(td !== 0) return td;
+
+    if(bp !== ap) return bp - ap;
+
+    return a.name.localeCompare(b.name, "de");
+  });
+}
+
+function switchTab(tabId){
+  state.tab = tabId;
+
+  document.querySelectorAll(".section").forEach(section => {
+    section.classList.toggle("active", section.id === tabId);
+  });
+
+  document.querySelectorAll(".nav").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.tab === tabId);
+  });
+
+  window.scrollTo({top:0, behavior:"smooth"});
+  save();
+}
+
+function addPlayer(){
+  const name = els.playerName.value.trim().replace(/\s+/g, " ");
+
+  if(!name){
+    showToast("Name fehlt");
+    els.playerName.focus();
+    return;
+  }
+
+  const duplicate = state.players.some(p => p.name.toLocaleLowerCase("de") === name.toLocaleLowerCase("de"));
+  if(duplicate){
+    showToast("Spieler gibt es schon");
+    return;
+  }
+
+  state.players.push({
+    id: uid(),
+    name,
+    scores: Array.from({length:state.holes}, () => "")
+  });
+
+  els.playerName.value = "";
+  render();
+  switchTab("scoreTab");
+}
+
+function removePlayer(id){
+  state.players = state.players.filter(p => p.id !== id);
+  render();
+}
+
+function setHole(index){
+  state.hole = Math.max(0, Math.min(index, state.holes - 1));
+  render();
+}
+
+function stepScore(playerId, delta){
+  const player = state.players.find(p => p.id === playerId);
+  if(!player) return;
+
+  const current = player.scores[state.hole] === "" ? 0 : Number(player.scores[state.hole]);
+  let next = current + delta;
+
+  if(next < MIN_SCORE) next = "";
+  if(next > MAX_SCORE) next = MAX_SCORE;
+
+  player.scores[state.hole] = next;
+  render();
+}
+
+function setScore(playerId, value){
+  const player = state.players.find(p => p.id === playerId);
+  if(!player) return;
+
+  player.scores[state.hole] = validScore(value);
+  render();
+}
+
+function changeHoles(value){
+  state.holes = validHoles(value);
+  normalize();
+  render();
+}
+
+function clearScores(){
+  if(state.players.length === 0) return;
+
+  if(!confirm("Alle Scores leeren?")) return;
+
+  state.players.forEach(player => {
+    player.scores = Array.from({length:state.holes}, () => "");
+  });
+
+  render();
+}
+
+function resetAll(){
+  if(!confirm("Alles löschen?")) return;
+
+  state.tab = "scoreTab";
+  state.hole = 0;
+  state.holes = 18;
+  state.players = [];
+  localStorage.removeItem(STORAGE_KEY);
+  render();
+  switchTab("scoreTab");
+}
+
+function renderTop(){
+  const leader = sortedPlayers().find(p => played(p) > 0);
+
+  els.playerCount.textContent = String(state.players.length);
+  els.holeText.textContent = `${state.hole + 1} / ${state.holes}`;
+  els.leaderText.textContent = leader ? leader.name : "–";
+  els.holeCount.value = String(state.holes);
+}
+
+function renderDots(){
+  els.holeDots.innerHTML = Array.from({length:state.holes}, (_,i) => `
+    <button class="dot ${i === state.hole ? "active" : ""}" type="button" data-hole="${i}">
+      ${i + 1}
+    </button>
+  `).join("");
+}
+
+function renderScore(){
+  els.holeTitle.textContent = `Bahn ${state.hole + 1}`;
+  renderDots();
+
+  if(state.players.length === 0){
+    els.scoreList.innerHTML = `<div class="empty">Gehe zu Setup und füge Spieler hinzu.</div>`;
+    return;
+  }
+
+  els.scoreList.innerHTML = state.players.map(player => {
+    const value = player.scores[state.hole] === "" ? "" : String(player.scores[state.hole]);
+
+    return `
+      <div class="score-row">
+        <div class="score-name">
+          <strong>${escapeHtml(player.name)}</strong>
+          <span>Gesamt ${total(player)} · ${played(player)} / ${state.holes} gespielt</span>
+        </div>
+
+        <div class="stepper">
+          <button type="button" data-player="${escapeHtml(player.id)}" data-step="-1">−</button>
+          <input type="number" inputmode="numeric" min="${MIN_SCORE}" max="${MAX_SCORE}" value="${escapeHtml(value)}" data-score="${escapeHtml(player.id)}">
+          <button type="button" data-player="${escapeHtml(player.id)}" data-step="1">+</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderPlayers(){
+  if(state.players.length === 0){
+    els.playersList.innerHTML = `<div class="empty">Noch keine Spieler.</div>`;
+    return;
+  }
+
+  els.playersList.innerHTML = state.players.map(player => `
+    <div class="player">
+      <div class="player-name">${escapeHtml(player.name)}</div>
+      <button class="small-btn" type="button" data-remove="${escapeHtml(player.id)}">Löschen</button>
+    </div>
+  `).join("");
+}
+
+function renderRank(){
+  if(state.players.length === 0){
+    els.rankList.innerHTML = `<div class="empty">Noch keine Rangliste.</div>`;
+    return;
+  }
+
+  els.rankList.innerHTML = sortedPlayers().map((player,index) => `
+    <div class="rank-row">
+      <div class="rank-number">${index + 1}</div>
+      <div>
+        <div class="rank-name">${escapeHtml(player.name)}</div>
+        <div class="rank-info">${played(player)} / ${state.holes} Bahnen</div>
+      </div>
+      <div class="rank-total">${total(player)}</div>
+    </div>
+  `).join("");
+}
+
+function render(){
+  normalize();
+  renderTop();
+  renderScore();
+  renderPlayers();
+  renderRank();
+  save();
+}
+
+els.addPlayer.addEventListener("click", addPlayer);
+
+els.playerName.addEventListener("keydown", event => {
+  if(event.key === "Enter"){
+    event.preventDefault();
+    addPlayer();
+  }
+});
+
+els.holeCount.addEventListener("change", event => changeHoles(event.target.value));
+els.clearScores.addEventListener("click", clearScores);
+els.resetAll.addEventListener("click", resetAll);
+
+els.prevHole.addEventListener("click", () => setHole(state.hole - 1));
+els.nextHole.addEventListener("click", () => setHole(state.hole + 1));
+
+els.holeDots.addEventListener("click", event => {
+  const btn = event.target.closest("[data-hole]");
+  if(btn) setHole(Number(btn.dataset.hole));
+});
+
+els.scoreList.addEventListener("click", event => {
+  const btn = event.target.closest("[data-step]");
+  if(btn) stepScore(btn.dataset.player, Number(btn.dataset.step));
+});
+
+els.scoreList.addEventListener("change", event => {
+  const input = event.target.closest("[data-score]");
+  if(input) setScore(input.dataset.score, input.value);
+});
+
+els.playersList.addEventListener("click", event => {
+  const btn = event.target.closest("[data-remove]");
+  if(btn) removePlayer(btn.dataset.remove);
+});
+
+document.querySelectorAll(".nav").forEach(btn => {
+  btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+});
+
+load();
+render();
+switchTab(state.tab || "scoreTab");
+</script>
+</body>
+</html>
