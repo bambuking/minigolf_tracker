@@ -43,7 +43,12 @@ html,body{
 }
 
 button,input,select{font:inherit}
-button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+
+button{
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
 
 .app{
   width:100%;
@@ -83,6 +88,7 @@ h1{
   border:1px solid var(--line);
   border-radius:16px;
   text-align:center;
+  animation:fadeUp .35s ease both;
 }
 
 .stat small{
@@ -101,7 +107,11 @@ h1{
 }
 
 .section{display:none}
-.section.active{display:block}
+
+.section.active{
+  display:block;
+  animation:fadeUp .25s ease both;
+}
 
 .card{
   width:100%;
@@ -110,6 +120,7 @@ h1{
   background:rgba(17,29,48,.92);
   border:1px solid var(--line);
   border-radius:20px;
+  animation:fadeUp .3s ease both;
 }
 
 .card h2{
@@ -146,6 +157,51 @@ input:focus,select:focus{
 
 .field{margin-bottom:12px}
 
+.btn,
+.small-btn,
+.arrow,
+.dot,
+.nav,
+.stepper button{
+  transform:translateZ(0);
+  transition:
+    transform .16s ease,
+    box-shadow .16s ease,
+    filter .16s ease,
+    background-color .16s ease,
+    border-color .16s ease;
+}
+
+.btn:hover,
+.small-btn:hover,
+.arrow:hover,
+.dot:hover,
+.nav:hover,
+.stepper button:hover{
+  transform:translateY(-2px) scale(1.02);
+  filter:brightness(1.08);
+  box-shadow:0 10px 22px rgba(0,0,0,.24);
+}
+
+.btn:active,
+.small-btn:active,
+.arrow:active,
+.dot:active,
+.nav:active,
+.stepper button:active{
+  transform:translateY(1px) scale(.96);
+  filter:brightness(.95);
+}
+
+.btn.pulse,
+.small-btn.pulse,
+.arrow.pulse,
+.dot.pulse,
+.nav.pulse,
+.stepper button.pulse{
+  animation:buttonPop .25s ease;
+}
+
 .btn{
   width:100%;
   min-height:50px;
@@ -155,11 +211,24 @@ input:focus,select:focus{
   color:white;
   background:var(--blue);
   font-weight:900;
+  box-shadow:0 8px 18px rgba(59,130,246,.22);
 }
 
-.btn.secondary{background:#334155}
-.btn.danger{background:var(--red)}
-.btn.green{background:var(--green);color:#06111f}
+.btn.secondary{
+  background:#334155;
+  box-shadow:0 8px 18px rgba(51,65,85,.25);
+}
+
+.btn.danger{
+  background:var(--red);
+  box-shadow:0 8px 18px rgba(239,68,68,.22);
+}
+
+.btn.green{
+  background:var(--green);
+  color:#06111f;
+  box-shadow:0 8px 18px rgba(34,197,94,.22);
+}
 
 .btn-row{
   display:grid;
@@ -181,6 +250,7 @@ input:focus,select:focus{
   background:var(--card2);
   border:1px solid var(--line);
   border-radius:14px;
+  animation:fadeUp .22s ease both;
 }
 
 .player-name{
@@ -254,6 +324,8 @@ input:focus,select:focus{
 .dot.active{
   background:var(--blue);
   border-color:#60a5fa;
+  box-shadow:0 0 0 3px rgba(59,130,246,.18),0 8px 18px rgba(59,130,246,.28);
+  animation:activeDot .28s ease;
 }
 
 .score-list{
@@ -270,6 +342,7 @@ input:focus,select:focus{
   background:var(--card2);
   border:1px solid var(--line);
   border-radius:16px;
+  animation:fadeUp .22s ease both;
 }
 
 .score-name{
@@ -333,6 +406,7 @@ input:focus,select:focus{
   background:var(--card2);
   border:1px solid var(--line);
   border-radius:14px;
+  animation:fadeUp .22s ease both;
 }
 
 .rank-number{
@@ -348,6 +422,7 @@ input:focus,select:focus{
 .rank-row:first-child .rank-number{
   background:var(--yellow);
   color:#111827;
+  animation:goldPulse 1.8s ease-in-out infinite;
 }
 
 .rank-name{
@@ -410,11 +485,21 @@ input:focus,select:focus{
   display:block;
   font-size:20px;
   margin-bottom:3px;
+  transition:transform .18s ease;
+}
+
+.nav:hover span{
+  transform:translateY(-2px) scale(1.12) rotate(-4deg);
 }
 
 .nav.active{
   background:#13233a;
   color:#60a5fa;
+  box-shadow:inset 0 0 0 1px rgba(96,165,250,.16),0 8px 18px rgba(59,130,246,.12);
+}
+
+.nav.active span{
+  animation:navBounce .35s ease;
 }
 
 .toast{
@@ -438,11 +523,59 @@ input:focus,select:focus{
   transform:translateX(-50%) translateY(0);
 }
 
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(8px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+@keyframes buttonPop{
+  0%{transform:scale(1)}
+  50%{transform:scale(.92)}
+  100%{transform:scale(1)}
+}
+
+@keyframes activeDot{
+  0%{transform:scale(.88)}
+  70%{transform:scale(1.1)}
+  100%{transform:scale(1)}
+}
+
+@keyframes navBounce{
+  0%{transform:translateY(0) scale(1)}
+  45%{transform:translateY(-4px) scale(1.16)}
+  100%{transform:translateY(0) scale(1)}
+}
+
+@keyframes goldPulse{
+  0%,100%{
+    box-shadow:0 0 0 rgba(251,191,36,0);
+  }
+  50%{
+    box-shadow:0 0 18px rgba(251,191,36,.38);
+  }
+}
+
 @media(max-width:360px){
   .app{padding-left:10px;padding-right:10px}
   .score-row{grid-template-columns:1fr}
   .stepper{grid-template-columns:1fr 60px 1fr}
   .stepper button,.stepper input{width:100%}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,
+  *::before,
+  *::after{
+    animation:none !important;
+    transition:none !important;
+    scroll-behavior:auto !important;
+  }
 }
 </style>
 </head>
@@ -635,6 +768,13 @@ function showToast(text){
   els.toast.classList.add("show");
   clearTimeout(showToast.timer);
   showToast.timer = setTimeout(() => els.toast.classList.remove("show"), 1300);
+}
+
+function animateButton(element){
+  if(!element) return;
+  element.classList.remove("pulse");
+  void element.offsetWidth;
+  element.classList.add("pulse");
 }
 
 function total(player){
@@ -851,6 +991,11 @@ function render(){
   renderRank();
   save();
 }
+
+document.addEventListener("click", event => {
+  const animatedButton = event.target.closest("button");
+  if(animatedButton) animateButton(animatedButton);
+});
 
 els.addPlayer.addEventListener("click", addPlayer);
 
